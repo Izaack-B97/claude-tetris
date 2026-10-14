@@ -224,6 +224,7 @@ function drawNext() {
 function endGame() {
   gameOver = true;
   cancelAnimationFrame(animId);
+  draw(); // el loop está detenido: dibujar el estado final
   overlayTitle.textContent = 'GAME OVER';
   overlayScore.textContent = `Puntuación: ${score.toLocaleString()}`;
   overlay.classList.remove('hidden');
@@ -268,6 +269,8 @@ function loop(ts) {
       current.y++;
     } else {
       lockPiece();
+      // lockPiece() puede disparar endGame(): no reprogramar el loop
+      if (gameOver) return;
     }
   }
   draw();

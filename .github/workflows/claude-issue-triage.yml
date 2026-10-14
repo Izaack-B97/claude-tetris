@@ -47,7 +47,12 @@ jobs:
                y aplícalos con `gh issue edit ${{ github.event.issue.number }} --add-label "label1,label2"`.
                Si el evento es `edited`, quita con `--remove-label` los labels que ya no apliquen.
             4. Escribe un diagnóstico en español en el archivo `/tmp/claude-triage.md`. La primera línea debe ser
-               exactamente `<!-- claude-triage -->` y después usa este formato:
+               exactamente `<!-- claude-triage -->` y después usa este formato.
+               Todo el contenido debe estar en Markdown válido que GitHub pueda renderizar (GitHub Flavored
+               Markdown): encabezados con `##`, negritas con `**`, listas con `-` o `1.`, código en línea con
+               comillas invertidas y bloques de código con triple comilla invertida indicando el lenguaje
+               (por ejemplo ```js). Deja una línea en blanco entre secciones y antes/después de listas y bloques
+               de código para que se rendericen correctamente. No uses HTML salvo el marcador `<!-- claude-triage -->`.
 
                ## 🔍 Diagnóstico automático
                **Resumen:** qué se reporta o se solicita, en 1-3 frases.

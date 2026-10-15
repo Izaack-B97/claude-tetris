@@ -134,6 +134,11 @@ body {
   letter-spacing: 1px;
 }
 
+.value.powerup {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
 #next-canvas {
   display: block;
   border: 1px solid var(--border);

@@ -25,6 +25,7 @@ Key points in `game.js` that span multiple pieces:
 - **Collision** (`collide(shape, x, y)`) is the single check used by movement, rotation (with kicks `[0,-1,1,-2,2]` in `tryRotate`), gravity, ghost projection (`ghostY`), and game-over detection. Cells with `y < 0` are allowed (above the board).
 - **Game loop**: `requestAnimationFrame`-driven `loop(ts)` accumulates `dropAccum` and applies gravity when it exceeds `dropInterval`; it redraws the whole board every frame. Pause/game-over stop the loop via `cancelAnimationFrame(animId)`; unpausing resets `lastTime` and restarts `loop`.
 - **Scoring/levels** live in `clearLines()`, `softDrop()`, `hardDrop()`: `LINE_SCORES[n] * level`, +1 per soft-drop row, +2 per hard-drop cell; level = `floor(lines/10)+1`; `dropInterval = max(100, 1000 - (level-1)*90)`.
+- **Power-ups**: every `POWERUP_EVERY` lines `clearLines()` sets `pendingPowerup`, and `spawn()` then makes `next` via `makePowerPiece()` — a normal piece with `power: { kind, r, c }` marking one cell of its `shape` (`tryRotate()` rotates that coordinate too). `lockPiece()` runs `applyPowerup()` between `merge()` and `clearLines()`. Timed effects (`freezeLeft`, `tintLeft`) are decremented by `dt` in `loop()`, so they pause with the game; `init()` resets them plus `nextPowerupAt`/`pendingPowerup`. `COLORS[8]` is `WILDCARD` (Tinte), a color-only index with no entry in `PIECES`.
 - **Overlay** (`#overlay`) is shared between PAUSA and GAME OVER states; its title/score text is set by `togglePause()` / `endGame()` and hidden by `init()`.
 
 ## Coupled constants

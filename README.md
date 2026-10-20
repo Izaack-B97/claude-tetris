@@ -44,6 +44,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Pausa** y **Game Over** con opción de reinicio.
 - **Tema claro/oscuro** con botón junto al título o tecla `T` (siempre inicia en oscuro).
 - **Power-ups aleatorios** cada 3 líneas (ver abajo).
+- **Skins visuales** para los bloques: _Retro_, _Neon_, _Pastel_ y _Pixel art_. Se eligen en el selector junto al título o con la tecla `S`, y la preferencia se guarda en `localStorage` (`tetris.skin`).
 
 ### Power-ups
 
@@ -102,6 +103,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `Espacio` | Hard drop (caída instantánea)     |
 | `P`       | Pausar / reanudar                 |
 | `T`       | Cambiar tema claro / oscuro       |
+| `S`       | Cambiar skin de los bloques       |
 
 ---
 
@@ -190,7 +192,8 @@ Algunos parámetros fáciles de tunear en `game.js`:
 | `COLS`         | Columnas del tablero                     | `10`                  |
 | `ROWS`         | Filas del tablero                        | `20`                  |
 | `BLOCK`        | Tamaño en píxeles de cada celda          | `30`                  |
-| `COLORS`       | Paleta de colores por tipo de pieza      | 7 colores             |
+| `COLORS`       | Paleta de colores por tipo de pieza (skin Retro) | 7 colores + comodín |
+| `SKINS`        | Paletas y dibujo de bloques de cada skin | Retro/Neon/Pastel/Pixel art |
 | `LINE_SCORES`  | Puntos por 1, 2, 3 o 4 líneas eliminadas | `[0,100,300,500,800]` |
 | `dropInterval` | Velocidad inicial de caída en ms         | `1000`                |
 

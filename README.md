@@ -44,6 +44,7 @@ Es una versión jugable del Tetris clásico con todas las mecánicas que esperar
 - **Pausa** y **Game Over** con opción de reinicio.
 - **Tema claro/oscuro** con botón junto al título o tecla `T` (siempre inicia en oscuro).
 - **Power-ups aleatorios** cada 3 líneas (ver abajo).
+- **Tabla de records local** (top 5) guardada en el navegador (ver abajo).
 
 ### Power-ups
 
@@ -58,6 +59,17 @@ Cada 3 líneas eliminadas, la siguiente pieza trae **un bloque especial** con un
 | ❄ Congelar   | Detiene la caída automática durante 5 segundos                         |
 
 Cada bloque destruido por un power-up suma `10 × nivel` puntos. El panel **POWER-UP** muestra el efecto activo o el próximo.
+
+### Records
+
+El juego ya no arranca solo: la **pantalla de inicio** muestra la tabla de records y se empieza con el botón **Jugar** o la tecla `Enter`.
+
+- Se guardan los **5 mejores puntajes** en `localStorage` (clave `tetris.records`) con nombre, puntos, líneas, mejor combo y fecha.
+- El **combo** cuenta las piezas seguidas que limpian líneas; se reinicia cuando una pieza se fija sin limpiar.
+- Al terminar, si tu puntaje entra al top 5 aparece un campo para tu nombre (máx. 12 caracteres) y el botón **Guardar**; la fila nueva queda resaltada.
+- **Mejor combo** y **Máx. líneas** son récords históricos (clave `tetris.bests`) que se actualizan aunque el puntaje no entre al top 5.
+- **Borrar records** limpia la tabla y los récords históricos (pide confirmación).
+- Si el navegador no permite almacenamiento, el juego funciona igual, solo que sin guardar.
 
 ---
 
@@ -102,6 +114,7 @@ Después abre `http://localhost:8000` en el navegador.
 | `Espacio` | Hard drop (caída instantánea)     |
 | `P`       | Pausar / reanudar                 |
 | `T`       | Cambiar tema claro / oscuro       |
+| `Enter`   | Empezar (pantalla de inicio)      |
 
 ---
 
@@ -115,7 +128,8 @@ Define la estructura visual:
 
 - Un `<canvas id="board">` de **300 × 600** píxeles donde se renderiza el tablero.
 - Un panel lateral con `SCORE`, `LINES`, `LEVEL`, vista de la siguiente pieza y la lista de controles.
-- Un overlay para los estados **PAUSA** y **GAME OVER**.
+- Un overlay para los estados **PAUSA** y **GAME OVER** (este último con la tabla de records).
+- Una pantalla de inicio (`#start-screen`) con el botón **Jugar** y la tabla de records.
 
 ### 2. `style.css`
 
@@ -138,6 +152,7 @@ Contiene toda la lógica del juego. A grandes rasgos:
 ### Flujo del juego
 
 ```
+startGame()  (Jugar / Enter)
 init()
   ├─ createBoard()                  → matriz vacía
   ├─ next = randomPiece()

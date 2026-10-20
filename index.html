@@ -58,6 +58,43 @@
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
         <button id="restart-btn">Reiniciar</button>
+        <!-- tabla de records: solo visible en GAME OVER -->
+        <div id="gameover-records" class="hidden">
+          <p id="game-stats"></p>
+          <form id="record-form" class="record-form hidden">
+            <p class="record-msg">¡Nuevo record! Entraste al top 5</p>
+            <input id="record-name" type="text" maxlength="12" value="Jugador" autocomplete="off" aria-label="Tu nombre" />
+            <button type="submit" id="save-record-btn">Guardar</button>
+          </form>
+          <p id="record-saved" class="record-msg hidden"></p>
+          <div class="records">
+            <span class="label">RECORDS</span>
+            <table class="records-table">
+              <thead><tr><th>#</th><th>Nombre</th><th>Puntos</th><th>Líneas</th><th>Combo</th><th>Fecha</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <p class="records-bests">Mejor combo: <span class="best-combo">0</span> · Máx. líneas: <span class="best-lines">0</span></p>
+            <button type="button" class="clear-records-btn">Borrar records</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- pantalla de inicio: el juego arranca con Jugar o Enter -->
+    <div id="start-screen" class="overlay">
+      <div class="overlay-box">
+        <p class="start-title">¿Listo?</p>
+        <button type="button" id="play-btn">Jugar</button>
+        <p class="start-hint">o pulsa <kbd>Enter</kbd></p>
+        <div class="records">
+          <span class="label">RECORDS</span>
+          <table class="records-table">
+            <thead><tr><th>#</th><th>Nombre</th><th>Puntos</th><th>Líneas</th><th>Combo</th><th>Fecha</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <p class="records-bests">Mejor combo: <span class="best-combo">0</span> · Máx. líneas: <span class="best-lines">0</span></p>
+          <button type="button" class="clear-records-btn">Borrar records</button>
+        </div>
       </div>
     </div>
   </div>

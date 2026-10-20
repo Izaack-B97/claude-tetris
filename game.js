@@ -57,11 +57,18 @@ const overlayScore = document.getElementById('overlay-score');
 const restartBtn = document.getElementById('restart-btn');
 const themeBtn = document.getElementById('theme-toggle');
 const powerupEl = document.getElementById('powerup');
+const pauseMenu = document.getElementById('pause-menu');
+const resumeBtn = document.getElementById('resume-btn');
+const menuRestartBtn = document.getElementById('menu-restart-btn');
+const controlsBtn = document.getElementById('controls-btn');
+const pauseControls = document.getElementById('pause-controls');
+const startLevelSel = document.getElementById('start-level');
 
 let gridColor;
 
 let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 let nextPowerupAt, pendingPowerup, freezeLeft, tintLeft;
+let startLevel = 1; // ajuste del menú de pausa: se aplica en init()
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
@@ -150,7 +157,8 @@ function clearLines() {
       nextPowerupAt += POWERUP_EVERY;
     }
     score += (LINE_SCORES[cleared] || 0) * level;
-    level = Math.floor(lines / 10) + 1;
+    // nunca por debajo del nivel con el que empezó la partida
+    level = Math.max(level, Math.floor(lines / 10) + 1);
     dropInterval = Math.max(100, 1000 - (level - 1) * 90);
     updateHUD();
   }
@@ -394,14 +402,36 @@ function togglePause() {
   if (gameOver) return;
   paused = !paused;
   if (!paused) {
+    closePauseMenu();
     lastTime = performance.now();
+    dropAccum = 0; // la pieza no salta al reanudar
     loop(lastTime);
   } else {
     cancelAnimationFrame(animId);
-    overlayTitle.textContent = 'PAUSA';
-    overlayScore.textContent = '';
-    overlay.classList.remove('hidden');
+    openPauseMenu();
   }
+}
+
+function openPauseMenu() {
+  startLevelSel.value = String(startLevel);
+  pauseMenu.classList.remove('hidden');
+}
+
+function closePauseMenu() {
+  pauseMenu.classList.add('hidden');
+  pauseControls.classList.add('hidden');
+  controlsBtn.setAttribute('aria-expanded', 'false');
+  controlsBtn.textContent = 'Ver controles';
+  // quitar el foco para que Space/Enter no activen botones del menú
+  if (pauseMenu.contains(document.activeElement)) document.activeElement.blur();
+}
+
+// ↑/↓ mueven el foco entre las opciones del menú
+function navigatePauseMenu(dir) {
+  const items = [...pauseMenu.querySelectorAll('button, select')];
+  const i = items.indexOf(document.activeElement);
+  const n = i === -1 ? (dir > 0 ? 0 : items.length - 1) : (i + dir + items.length) % items.length;
+  items[n].focus();
 }
 
 function loop(ts) {
@@ -432,10 +462,10 @@ function init() {
   board = createBoard();
   score = 0;
   lines = 0;
-  level = 1;
+  level = startLevel;
   paused = false;
   gameOver = false;
-  dropInterval = 1000;
+  dropInterval = Math.max(100, 1000 - (level - 1) * 90);
   dropAccum = 0;
   nextPowerupAt = POWERUP_EVERY;
   pendingPowerup = false;
@@ -446,13 +476,15 @@ function init() {
   spawn();
   updateHUD();
   overlay.classList.add('hidden');
+  closePauseMenu();
   cancelAnimationFrame(animId);
   animId = requestAnimationFrame(loop);
 }
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'KeyP') { togglePause(); return; }
+  if (e.code === 'KeyP' || e.code === 'Escape') { togglePause(); return; }
   if (e.code === 'KeyT') { toggleTheme(); return; }
+  if (paused && !gameOver) { handlePauseKey(e); return; }
   if (paused || gameOver) return;
   switch (e.code) {
     case 'ArrowLeft':
@@ -476,7 +508,27 @@ document.addEventListener('keydown', e => {
   updateHUD();
 });
 
+// en pausa no se mueve la pieza: solo navegación del menú
+function handlePauseKey(e) {
+  if (e.target === startLevelSel) return; // el select usa sus propias flechas
+  if (e.code === 'ArrowDown' || e.code === 'ArrowUp') {
+    e.preventDefault();
+    navigatePauseMenu(e.code === 'ArrowDown' ? 1 : -1);
+  }
+}
+
 restartBtn.addEventListener('click', init);
+resumeBtn.addEventListener('click', togglePause);
+menuRestartBtn.addEventListener('click', init);
+controlsBtn.addEventListener('click', () => {
+  const show = pauseControls.classList.toggle('hidden') === false;
+  controlsBtn.setAttribute('aria-expanded', String(show));
+  controlsBtn.textContent = show ? 'Ocultar controles' : 'Ver controles';
+});
+for (let n = 1; n <= 10; n++) startLevelSel.add(new Option(String(n), String(n)));
+startLevelSel.addEventListener('change', () => {
+  startLevel = Number(startLevelSel.value);
+});
 themeBtn.addEventListener('click', () => {
   toggleTheme();
   themeBtn.blur(); // evita que Space active el botón
